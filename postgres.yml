@@ -1,0 +1,36 @@
+---
+- name: postgresql
+  hosts: 127.0.0.1
+  connection: local
+
+  vars:
+    ansible_become_pass: "lucifer317"
+
+  tasks:
+    - name: Install pip and docker.io
+      become: yes
+      apt:
+        name: "{{ packages }}"
+        state: present
+      vars:
+        packages:
+          - python-pip
+          - docker.io
+
+    - name: Install Docker Python library
+      become: yes
+      pip: 
+        name: "{{ packages }}"
+        state: present
+      vars:
+        packages:
+          - docker
+
+    - name: Build Docker images from Dockerfiles
+      docker_image:
+        name: "{{ item.name }}"
+        tag: "{{ item.tag }}"
+        path: "./{{ item.directory }}"
+        state: build
+      with_items:
+        - { name: postgres, tag: "postgres", directory: db }
