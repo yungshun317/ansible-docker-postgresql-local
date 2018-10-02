@@ -33,12 +33,19 @@
         path: "./{{ item.directory }}"
         state: build
       with_items:
-        - { name: postgres, tag: "postgres", directory: postgres }
+        - { name: db, tag: "postgres", directory: db }
+        - { name: data, tag: "data", directory: data }
+
+    - name: Run a data container
+      docker_container:
+        image: data:data
+        name: data
+        state: present
 
     - name: Run a postgres container
       docker_container:
-        image: postgres:postgres
-        name: postgres
+        image: db:postgres
+        name: db
         state: started
         volumes_from: data
         ports: "5432:5432"
